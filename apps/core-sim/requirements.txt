@@ -1,0 +1,3 @@
+fastapi
+uvicorn[pstandard]
+prometheus_client

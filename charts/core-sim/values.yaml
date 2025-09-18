@@ -1,0 +1,6 @@
+image: { repository: core-sim, tag: local }
+service: { port: 8000 }
+replicaCount: 2
+openshift: { route: { enabled: false } }
+securityContext: null
+podSecurityContext: null

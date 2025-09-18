@@ -1,0 +1,13 @@
+image: { repository: ran-sim, tag: local }
+service: { port: 8000 }
+resources:
+  requests: { cpu: 100m, memory: 128Mi }
+  limits:   { cpu: 300m, memory: 256Mi }
+replicaCount: 2
+
+# OpenShift overlay
+openshift:
+  route: { enabled: false }
+
+securityContext: null
+podSecurityContext: null

@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata: { name: build-and-push-simulators }
+spec:
+  params:
+  - { name: registry, type: string, default: ghcr.io/tmwaas/telco-cloud-project }
+  - { name: commit, type: string, default: latest }
+  workspaces: [ { name: source } ]
+  tasks:
+  - name: build-ran
+    taskRef: { kind: ClusterTask, name: buildah }
+    params:
+    - { name: IMAGE, value: "$(params.registry)/ran-sim:$(params.commit)" }
+    - { name: DOCKERFILE, value: "apps/ran-sim/Dockerfile" }
+    - { name: CONTEXT, value: "." }
+    workspaces: [ { name: source, workspace: source } ]
+  - name: build-core
+    runAfter: [ build-ran ]
+    taskRef: { kind: ClusterTask, name: buildah }
+    params:
+    - { name: IMAGE, value: "$(params.registry)/core-sim:$(params.commit)" }
+    - { name: DOCKERFILE, value: "apps/core-sim/Dockerfile" }
+    - { name: CONTEXT, value: "." }
+    workspaces: [ { name: source, workspace: source } ]

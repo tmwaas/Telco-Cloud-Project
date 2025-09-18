@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata: { name: slo-burn-rate }
+spec:
+  groups:
+  - name: ran-availability
+    rules:
+    - alert: RANAvailabilityErrorBudgetBurn
+      expr: (1 - avg_over_time(probe_success{job="blackbox"}[5m])) > (1 - 0.999) * 14.4
+      for: 1h
+      labels: { severity: critical }
+      annotations: { summary: "RAN availability burn rate high" }
+  - name: core-latency
+    rules:
+    - alert: CoreP95LatencyHigh
+      expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{app="core-sim"}[5m])) > 0.2
+      for: 10m
+      labels: { severity: warning }
+      annotations: { summary: "Core p95 latency above 200ms" }

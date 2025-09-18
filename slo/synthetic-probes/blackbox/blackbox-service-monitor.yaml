@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: blackbox-exporter
+  namespace: platform
+  labels:
+    release: kube-prometheus # Pastikan label ini cocok dengan rilis Helm Anda
+spec:
+  endpoints:
+    - port: http
+      path: /probe
+      interval: 30s
+      params:
+        target:
+          - http://ran-api.platform.svc.cluster.local
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter

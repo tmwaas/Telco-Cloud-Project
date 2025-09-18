@@ -1,0 +1,7 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata: { name: ran-sim, namespace: ns-ran }
+spec:
+  to: { kind: Service, name: ran-sim }
+  port: { targetPort: http }
+  tls: { termination: edge }

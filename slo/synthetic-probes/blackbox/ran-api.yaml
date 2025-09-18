@@ -1,0 +1,12 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Probe
+metadata: { name: ran-api, namespace: platform }
+spec:
+  jobName: blackbox-ran
+  interval: 30s
+  module: http_2xx
+  prober: { url: blackbox-exporter.platform.svc.cluster.local:9115 }
+  targets:
+    staticConfig:
+      static:
+      - http://ran-sim.ns-ran.svc.cluster.local:8000/healthz

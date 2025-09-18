@@ -1,0 +1,9 @@
+{{- if .Values.openshift.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata: { name: core-sim }
+spec:
+  to: { kind: Service, name: core-sim }
+  port: { targetPort: http }
+  tls: { termination: edge }
+{{- end }}

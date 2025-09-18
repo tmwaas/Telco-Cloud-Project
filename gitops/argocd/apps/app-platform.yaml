@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform
+  namespace: argocd
+  annotations: { argocd.argoproj.io/sync-wave: "0" }
+spec:
+  destination: { namespace: platform, server: https://kubernetes.default.svc }
+  project: default
+  source:
+    repoURL: https://github.com/tmwaas/telco-cloud-project
+    path: charts/platform
+    targetRevision: HEAD
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions: [ CreateNamespace=true ]
