@@ -55,35 +55,36 @@ It is designed both as:
 ## 🏗️ Architecture Diagram
 
 ```mermaid
-flowchart TD
-    subgraph Local[Local Dev (WSL2 + k3d)]
-      A1[RAN Simulator (FastAPI)]
-      A2[Core Simulator (FastAPI)]
-      A3[Prometheus + Grafana]
-      A4[Argo CD]
+graph TD
+    subgraph Local Dev (WSL2 + k3d)
+        A1[RAN Simulator (FastAPI)]
+        A2[Core Simulator (FastAPI)]
+        A3[Prometheus + Grafana]
+        A4[Argo CD]
     end
 
-    subgraph Cloud[AWS EKS / OpenShift]
-      B1[RAN Simulator (FastAPI, ECR image)]
-      B2[Core Simulator (FastAPI, ECR image)]
-      B3[Prometheus Operator]
-      B4[Grafana Dashboards]
-      B5[Argo CD App-of-Apps]
-      B6[Alertmanager + Blackbox]
+    subgraph Cloud (AWS EKS / OpenShift)
+        B1[RAN Simulator (FastAPI, ECR Image)]
+        B2[Core Simulator (FastAPI, ECR Image)]
+        B3[Prometheus Operator]
+        B4[Grafana Dashboards]
+        B5[Argo CD App-of-Apps]
+        B6[Alertmanager + BlackBox]
     end
 
-    Dev[Developer Laptop] -->|Code, Helm, Git| Local
-    Local -->|GitOps Sync| Cloud
+    Dev[Developer Laptop] --> Local
+    Local --> Cloud
+    Cloud --> B1
+    Cloud --> B2
 
-    B1 -->|Metrics| B3
-    B2 -->|Metrics| B3
-    B3 --> B4
-    B3 --> B6
-    B6 -->|Alerts| Oncall[On-call Engineer]
+    B1 --> B3[Metrics]
+    B2 --> B3[Metrics]
+    B3 --> B4[Grafana Dashboards]
+    B6 --> Oncall[On-call Engineer]
 
     style Dev fill:#f7e5,stroke:#333
+    style Local fill:#eef,stroke:#333
     style Cloud fill:#eef,stroke:#333
-    style Local fill:#efe,stroke:#333
 ```
 
 ---
