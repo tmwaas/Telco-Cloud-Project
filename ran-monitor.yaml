@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ran-sim-monitor
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: ran-sim
+  endpoints:
+  - port: web
+    path: /metrics
+    interval: 30s

@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ran-core
+  namespace: ns-ran
+spec:
+  podSelector:
+    matchLabels:
+      app: ran-sim
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ns-core
+    ports:
+    - protocol: TCP
+      port: 80
+

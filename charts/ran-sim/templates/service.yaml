@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ran-sim
+spec:
+  type: ClusterIP
+  selector:
+    app: ran-sim
+  ports:
+  - name: http
+    port: 80
+    # targetPort: http
+    targetPort: 8000
+

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-sim
+  namespace: tmwaas-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana-sim
+  template:
+    metadata:
+      labels:
+        app: grafana-sim
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:latest
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-sim
+  namespace: tmwaas-dev
+spec:
+  selector:
+    app: grafana-sim
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: grafana-sim
+  namespace: tmwaas-dev
+spec:
+  to:
+    kind: Service
+    name: grafana-sim
+  port:
+    targetPort: 3000

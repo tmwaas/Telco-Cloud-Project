@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+dist/
+charts/**/charts/
+
+# Block binaries
+minikube*
+*.exe
+*.bin
+*.out
+*.gz
+*.tar
+*.zip
+

@@ -1,0 +1,9 @@
+{
+  "event": "jira.issue.updated",
+  "issue": {
+    "key": "TCL-101",
+    "fields": {
+      "status": { "name": "Ready for Build CI" }
+    }
+  }
+}

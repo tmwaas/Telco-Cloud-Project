@@ -1,0 +1,29 @@
+image:
+  repository: tmwaas/ran-sim
+  tag: dev
+  pullPolicy: IfNotPresent
+service: { port: 8000 }
+# resources:
+#   requests: { cpu: 100m, memory: 128Mi }
+#   limits:   { cpu: 300m, memory: 256Mi }
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi  
+replicaCount: 2
+
+# OpenShift overlay
+openshift:
+  route: { enabled: false }
+
+securityContext: null
+podSecurityContext: null
+
+env:
+  - name: CORE_URL
+    value: "http://core-sim:80/health"
+  - name: PYTHONUNBUFFERED
+    value: "1"

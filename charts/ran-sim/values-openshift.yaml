@@ -1,0 +1,3 @@
+openshift: { route: { enabled: true } }
+securityContext: { runAsNonRoot: true, allowPrivilegeEscalation: false }
+podSecurityContext: { fsGroup: 2000 }

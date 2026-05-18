@@ -1,0 +1,43 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Apply RAN simulator configmap
+      kubernetes.core.k8s:
+        state: present
+        namespace: ns-ran
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: ran-config
+          data:
+            RAN_REGION: "EU-West"
+            KPI_INTERVAL: "5"
+
+    - name: Apply Core simulator configmap
+      kubernetes.core.k8s:
+        state: present
+        namespace: ns-core
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: core-config
+          data:
+            QOS_DEFAULT: "qci9"
+            SESSION_TIMEOUT: "60"
+
+    - name: Apply tuning parameters for telco workloads
+      kubernetes.core.k8s:
+        state: present
+        namespace: platform
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: telco-tuning
+          data:
+            CPU_BOOST: "enabled"
+            LATENCY_TARGET_MS: "50"

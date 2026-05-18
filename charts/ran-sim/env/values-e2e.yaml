@@ -1,0 +1,32 @@
+image:
+  repository: ""       # GitLab CI will auto-update
+  tag: ""              # GitLab CI will auto-update
+  pullPolicy: IfNotPresent
+
+replicaCount: 3        # More stable than dev/system but less than load-test
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 256Mi
+  limits:
+    cpu: 300m
+    memory: 384Mi
+
+service:
+  port: 80
+
+env:
+  ENVIRONMENT: "e2e"
+  LOG_LEVEL: "debug"   # Useful for debugging full workflow
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+
+

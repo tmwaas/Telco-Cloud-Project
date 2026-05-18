@@ -1,0 +1,158 @@
+stages:
+  - lint
+  - build
+  - scan
+  - push
+  - deploy
+  - test
+  - post-deploy
+
+variables:
+  IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
+  RAN_IMAGE: "$CI_REGISTRY_IMAGE/ran-sim"
+  CORE_IMAGE: "$CI_REGISTRY_IMAGE/core-sim"
+
+##############################
+# 1. LINTING (Python)
+##############################
+lint:
+  stage: lint
+  image: python:3.11-slim
+  script:
+    - pip install --no-cache-dir ruff
+    - ruff apps/**/src || true
+
+##############################
+# 2. BUILD IMAGES
+##############################
+build:
+  stage: build
+  image: docker:25.0.3
+  services:
+    - docker:25.0.3-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker build -t "$RAN_IMAGE:$IMAGE_TAG"  apps/ran-sim
+    - docker build -t "$CORE_IMAGE:$IMAGE_TAG" apps/core-sim
+
+##############################
+# 3. SECURITY SCAN (TRIVY)
+##############################
+scan:
+  stage: scan
+  image: aquasec/trivy:latest
+  needs: ["build"]
+  script:
+    - trivy image --exit-code 0 "$RAN_IMAGE:$IMAGE_TAG"  || true
+    - trivy image --exit-code 0 "$CORE_IMAGE:$IMAGE_TAG" || true
+
+##############################
+# 4. SECURITY SCAN (JFROG)
+##############################
+security_scan_jfrog:
+  stage: scan
+  image: jfrog/jfrog-cli:latest
+  needs: ["build"]
+  script:
+    - jfrog --version || echo "Configure JFrog before enabling this stage"
+    - jfrog rt scan "$RAN_IMAGE:$IMAGE_TAG"  || true
+    - jfrog rt scan "$CORE_IMAGE:$IMAGE_TAG" || true
+  when: manual
+
+##############################
+# 5. PUSH IMAGES
+##############################
+push:
+  stage: push
+  image: docker:25.0.3
+  services:
+    - docker:25.0.3-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  needs: ["build"]
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker push "$RAN_IMAGE:$IMAGE_TAG"
+    - docker push "$CORE_IMAGE:$IMAGE_TAG"
+
+##############################
+# 6. UPDATE HELM VALUES (DEV)
+##############################
+deploy-dev:
+  stage: deploy
+  image: alpine:3.19
+  needs: ["push"]
+  before_script:
+    - apk add --no-cache git yq
+  script:
+    - yq -i '.image.repository = env(RAN_IMAGE)  | .image.tag = env(IMAGE_TAG)'  charts/ran-sim/env/values-dev.yaml
+    - yq -i '.image.repository = env(CORE_IMAGE) | .image.tag = env(IMAGE_TAG)' charts/core-sim/env/values-dev.yaml
+  only:
+    - main
+
+##############################
+# 7. (OPSIONAL) ENV LAIN
+##############################
+deploy-system:
+  stage: deploy
+  image: alpine:3.19
+  needs: ["push"]
+  before_script:
+    - apk add --no-cache yq
+  script:
+    - yq -i '.image.repository = env(RAN_IMAGE)  | .image.tag = env(IMAGE_TAG)'  charts/ran-sim/env/values-system.yaml
+    - yq -i '.image.repository = env(CORE_IMAGE) | .image.tag = env(IMAGE_TAG)' charts/core-sim/env/values-system.yaml
+  only:
+    - main
+
+deploy-load:
+  stage: deploy
+  image: alpine:3.19
+  needs: ["push"]
+  before_script:
+    - apk add --no-cache yq
+  script:
+    - yq -i '.image.repository = env(RAN_IMAGE)  | .image.tag = env(IMAGE_TAG)'  charts/ran-sim/env/values-load.yaml
+    - yq -i '.image.repository = env(CORE_IMAGE) | .image.tag = env(IMAGE_TAG)' charts/core-sim/env/values-load.yaml
+  only:
+    - main
+
+deploy-e2e:
+  stage: deploy
+  image: alpine:3.19
+  needs: ["push"]
+  before_script:
+    - apk add --no-cache yq
+  script:
+    - yq -i '.image.repository = env(RAN_IMAGE)  | .image.tag = env(IMAGE_TAG)'  charts/ran-sim/env/values-e2e.yaml
+    - yq -i '.image.repository = env(CORE_IMAGE) | .image.tag = env(IMAGE_TAG)' charts/core-sim/env/values-e2e.yaml
+  only:
+    - main
+
+##############################
+# 8. SMOKE TESTS
+##############################
+smoke-tests:
+  stage: test
+  image: curlimages/curl:8.8.0
+  needs:
+    - deploy-dev
+  script:
+    - echo "Here you would call /health of ran-sim and core-sim behind ingress/load balancer"
+  only:
+    - main
+
+##############################
+# 9. PARSE TEST RESULTS
+##############################
+parse_test_results:
+  stage: post-deploy
+  image: python:3.11-slim
+  script:
+    - python scripts/parse_test_results.py
+  artifacts:
+    reports:
+      junit: reports/test-results.xml
+  only:
+    - main

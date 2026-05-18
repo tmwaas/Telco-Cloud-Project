@@ -1,0 +1,30 @@
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 192Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
+
+service:
+  port: 80
+
+env:
+  ENVIRONMENT: "system-test"
+  LOG_LEVEL: "info"
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+livenessProbe:
+  initialDelaySeconds: 8
+  periodSeconds: 10
+

@@ -1,0 +1,35 @@
+namespaceOverride: ns-platform
+
+kube-prometheus-stack:
+  fullnameOverride: telco-platform
+
+  grafana:
+    adminPassword: "admin"
+    service:
+      type: ClusterIP
+    ingress:
+      enabled: false
+
+  prometheus:
+    service:
+      type: ClusterIP
+
+  alertmanager:
+    enabled: false
+
+  prometheusOperator:
+    enabled: true
+    createCustomResource: false
+
+kubePrometheusStack:
+  alertmanager:
+    enabled: false
+  prometheus:
+    enabled: false
+  prometheusRule:
+    enabled: false
+  prometheusOperator:
+    enabled: true  
+  grafana:
+    enabled: true
+  

@@ -1,0 +1,10 @@
+apiVersion: v2
+name: platform
+version: 1.0.0
+description: Telco Cloud Platform Stack (Prometheus + Grafana via kube-prometheus-stack)
+type: application
+
+dependencies:
+  - name: kube-prometheus-stack
+    version: "56.6.0"
+    repository: "https://prometheus-community.github.io/helm-charts"

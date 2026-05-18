@@ -1,0 +1,29 @@
+image:
+  repository: ""      # GitLab CI will auto-update
+  tag: ""             # GitLab CI will auto-update
+  pullPolicy: IfNotPresent
+
+replicaCount: 5   # Higher load, simulate many UEs or sessions
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+service:
+  port: 80
+
+env:
+  ENVIRONMENT: "load-test"
+  LOG_LEVEL: "info"
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 10

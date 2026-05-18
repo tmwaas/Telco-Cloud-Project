@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: telco-cloud-slo-rules
+spec:
+  groups:
+  - name: ran-availability
+    rules:
+    - alert: RANAvailabilityErrorBudgetBurn
+      expr: (1 - avg_over_time(probe_success{job="blackbox-ran"}[5m])) > (1 - 0.999) * 14.4
+      for: 1h
+      labels:
+        severity: critical
+      annotations:
+        summary: "RAN availability error budget burn is high"
+
+  - name: core-latency
+    rules:
+    - alert: CoreP95SessionLatencyHigh
+      expr: histogram_quantile(
+              0.95,
+              sum(rate(core_session_latency_ms_bucket[5m])) by (le)
+            ) > 200
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Core p95 session latency above 200 ms"
+

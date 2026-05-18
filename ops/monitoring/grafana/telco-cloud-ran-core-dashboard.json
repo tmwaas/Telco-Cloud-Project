@@ -1,0 +1,200 @@
+{
+  "title": "Telco Cloud – RAN & Core Overview",
+  "uid": "telco-cloud-ran-core",
+  "schemaVersion": 36,
+  "version": 1,
+  "editable": true,
+  "style": "dark",
+  "tags": ["telco", "5g", "ran", "core", "devops"],
+  "timezone": "browser",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m"]
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "RAN KPIs",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1
+    },
+    {
+      "id": 2,
+      "type": "graph",
+      "title": "RAN Throughput (Mbps)",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 1 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "ran_kpi_throughput_mbps",
+          "legendFormat": "Throughput"
+        }
+      ],
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "connected",
+      "yaxes": [
+        { "format": "Mbps", "label": "Throughput", "logBase": 1, "show": true },
+        { "format": "short", "show": false }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "graph",
+      "title": "RSRP (dBm)",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 1 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "ran_kpi_rsrp_dbm",
+          "legendFormat": "RSRP"
+        }
+      ],
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "connected",
+      "yaxes": [
+        { "format": "dBm", "label": "RSRP", "logBase": 1, "show": true },
+        { "format": "short", "show": false }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "graph",
+      "title": "SINR (dB)",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "ran_kpi_sinr_db",
+          "legendFormat": "SINR"
+        }
+      ],
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "connected",
+      "yaxes": [
+        { "format": "dB", "label": "SINR", "logBase": 1, "show": true },
+        { "format": "short", "show": false }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "graph",
+      "title": "RAN Request Latency (seconds)",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum(rate(ran_request_latency_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95 latency"
+        }
+      ],
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "connected",
+      "yaxes": [
+        { "format": "s", "label": "Latency", "logBase": 1, "show": true },
+        { "format": "short", "show": false }
+      ]
+    },
+    {
+      "type": "row",
+      "title": "Core Sessions",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "id": 6
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Active Sessions",
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "core_active_sessions",
+          "legendFormat": "active"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["last"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "value",
+        "graphMode": "area"
+      }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Total Sessions Created",
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 16 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "increase(core_sessions_total[15m])",
+          "legendFormat": "created (15m)"
+        }
+      ],
+      "options": {
+        "reduceOptions": {
+          "calcs": ["last"],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "colorMode": "value"
+      }
+    },
+    {
+      "id": 9,
+      "type": "graph",
+      "title": "Core Session Latency (ms)",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum(rate(core_session_latency_ms_bucket[5m])) by (le))",
+          "legendFormat": "p95 latency"
+        }
+      ],
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "connected",
+      "yaxes": [
+        { "format": "ms", "label": "Latency", "logBase": 1, "show": true },
+        { "format": "short", "show": false }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "piechart",
+      "title": "Sessions by QoS Profile",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 21 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(core_sessions_by_qos[15m])) by (qos)",
+          "legendFormat": "{{qos}}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right"
+        }
+      }
+    }
+  ],
+  "templating": {
+    "list": []
+  }
+}
