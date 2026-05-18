@@ -7,7 +7,7 @@
 [![Prometheus](https://img.shields.io/badge/Monitoring-Prometheus-red?logo=prometheus)]()
 [![Grafana](https://img.shields.io/badge/Dashboards-Grafana-orange?logo=grafana)]()
 
-A complete cloud‑native telecom platform simulating 5G RAN and 5G Core workloads deployed on **Red Hat OpenShift Developer Sandbox**, featuring:
+A complete cloud‑native telecom platform simulating 5G RAN and 5G Core workloads deployed on **Red Hat OpenShift**, featuring:
 * Helm + Kubernetes / OpenShift Core
 * GitLab CI/CD
 * ArgoCD GitOps (App-of-Apps pattern)
@@ -193,7 +193,7 @@ infra/ansible/telco-config-playbook.yaml
 
 🔴 Red Hat OpenShift Deployment Architecture
 
-The production environment is engineered specifically for **Red Hat OpenShift Client / Developer Sandbox** infrastructure, adhering to enterprise security constraints:
+The production environment is built specifically for **Red Hat OpenShift** infrastructure, adhering to enterprise security constraints:
 * **Security Context Constraints (SCC)**: Workloads configured to run strictly without root privileges (`runAsNonRoot: true`), fully compliant with OpenShift's default restricted execution policies.
 * **Service Mesh & Route Management**: Internal components integrated with cluster monitoring tools, allowing secure PromQL collection across namespaces.
 * **Resource Optimization**: Live profiling indicates minimal-footprint simulation executing gracefully under standard tenant resource quotas.
@@ -202,7 +202,7 @@ The production environment is engineered specifically for **Red Hat OpenShift Cl
 
 ### 🌐 Live Cluster Deployments on Red Hat OpenShift
 
-Below is the verified running state of our 5G simulation stack microservices inside the OpenShift Developer Sandbox environment:
+Below is the verified running state of our 5G simulation stack microservices inside the OpenShift environment:
 
 <p align="center">
   <img src="docs/images/openshift-deployment-dashboard.png" width="90%" alt="Red Hat OpenShift Active Deployments">
@@ -240,7 +240,7 @@ ArgoCD deploys:
 
 ### 3. Enterprise OpenShift Deployment
 
-To target a Red Hat OpenShift Sandbox cluster using native CLI configurations:
+To target a Red Hat OpenShift cluster using native CLI configurations:
 ```bash
 # Login to your OpenShift cluster
 oc login --token=<YOUR_TOKEN> --server=<YOUR_CLUSTER_URL>
@@ -250,10 +250,11 @@ oc apply -f gitops/argocd/root-app.yaml
 
 # Verify OpenShift Pod Statuses
 oc get pods -n telco-cloud-ran
+```
 
 ---
 
 # 👨‍💼 Author
 
 **Thomas Waas**  
-Cloud-Native Telecom & 5G DevOps Engineer 🇳🇱  
+Cloud-Native Telecom & 5G DevOps Engineer 
