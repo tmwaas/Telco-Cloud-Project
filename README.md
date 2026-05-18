@@ -249,7 +249,7 @@ oc login --token=<YOUR_TOKEN> --server=<YOUR_CLUSTER_URL>
 oc apply -f gitops/argocd/root-app.yaml
 
 # Verify OpenShift Pod Statuses
-oc get pods -n telco-cloud-ran
+oc get pods <your-allocated-namespace>
 ```
 
 ---
